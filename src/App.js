@@ -1,8 +1,60 @@
 import { useState } from "react";
 import "./styles.css";
 
+const Filter = ({ onChangeSearch, filterInputValue }) => {
+  return (
+    <div>
+      filter shown with{" "}
+      <input onChange={onChangeSearch} value={filterInputValue} />
+    </div>
+  );
+};
+
+const PersonForm = ({ formSubmitHandler, inputHandler, newContact }) => {
+  return (
+    <form onSubmit={formSubmitHandler}>
+      <div>
+        name:{" "}
+        <input name="name" onChange={inputHandler} value={newContact.name} />
+      </div>
+      <div>
+        number:{" "}
+        <input
+          name="number"
+          onChange={inputHandler}
+          value={newContact.number}
+        />
+      </div>
+      <div>
+        <button type="submit">add</button>
+      </div>
+    </form>
+  );
+};
+
+const Person = ({ name, number }) => {
+  return (
+    <div key={name}>
+      {name} {number}
+    </div>
+  );
+};
+const Persons = ({ contacts }) => {
+  return (
+    <div>
+      {contacts.map((person, key) => (
+        <Person name={person.name} number={person.number} />
+      ))}
+    </div>
+  );
+};
 const App = () => {
-  const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
+  const [persons, setPersons] = useState([
+    { name: "Arto Hellas", number: "040-123456" },
+    { name: "Ada Lovelace", number: "39-44-5323523" },
+    { name: "Dan Abramov", number: "12-43-234345" },
+    { name: "Mary Poppendieck", number: "39-23-6423122" }
+  ]);
   const [newContact, setNewContact] = useState({ name: "", number: "" });
   const [filter, setFilter] = useState("");
   const inputHandler = (e) => {
@@ -26,40 +78,22 @@ const App = () => {
   };
 
   const fileredContacts = persons.filter((person) =>
-    person.name.includes(filter)
+    person.name.toLowerCase().startsWith(filter.toLowerCase())
   );
   return (
     <div>
       <h2>Phonebook</h2>
 
-      <div>
-        filter shown with <input onChange={onChangeSearch} value={filter} />
-      </div>
+      <Filter onChangeSearch={onChangeSearch} filterInputValue={filter} />
 
       <h2>add a new</h2>
-      <form onSubmit={formSubmitHandler}>
-        <div>
-          name:{" "}
-          <input name="name" onChange={inputHandler} value={newContact.name} />
-        </div>
-        <div>
-          number:{" "}
-          <input
-            name="number"
-            onChange={inputHandler}
-            value={newContact.number}
-          />
-        </div>
-        <div>debug name: {newContact.name}</div>
-        <div>debug number: {newContact.number}</div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm
+        formSubmitHandler={formSubmitHandler}
+        inputHandler={inputHandler}
+        newContact={newContact}
+      />
       <h2>Numbers</h2>
-      {fileredContacts.map((person, key) => (
-        <div key={person.name}>{person.name}</div>
-      ))}
+      <Persons contacts={fileredContacts} />
     </div>
   );
 };
